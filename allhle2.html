@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Camping Interface</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100vh;
+            background-color: whitesmoke;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .message-container {
+            width: 1500px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #9A7E6F;
+            border-radius: 10px;
+            background-color: #E9EED9;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .message {
+            font-size: 24px;
+            color: #54473F;
+            text-align: center;
+            margin: 0;
+        }
+
+        .container {
+            width: 1500px;
+            height: 800px;
+            padding: 20px;
+            border: 1px solid #9A7E6F;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #E9EED9;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 40px;
+            color: #54473F;
+        }
+
+        .intro {
+            font-size: 20px;
+            width: 70%;
+            color: #54473F;
+            margin:auto;
+        }
+
+        .controls-container {
+            display: none;
+        }
+
+        .start-button {
+            font-size: 26px;
+            font-weight: bold;
+            text-align: center;
+            border: 1px solid #9A7E6F;
+            border-radius: 8px;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #9A7E6F;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .start-button:hover {
+            background-color: #826a5d;
+        }
+
+        .photo-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 2px;
+            display: none;
+        }
+
+        .gridDiv {
+            border-radius: 8px;
+            border: 10px solid #54473F;
+            width: 99%;
+            height: 98%;
+            z-index: 2;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            text-align: center;
+        }
+
+        .gridDiv > div {
+            outline: 5px solid #54473F;
+            transition: border 0.2s ease;
+            position: relative;
+        }
+
+        .gridDiv > div:hover {
+            border: 15px solid #54473F;
+        }
+
+        .gridDiv > div > span {
+            visibility: hidden;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(84, 71, 63, 0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            white-space: nowrap;
+            z-index: 3;
+        }
+
+        .gridDiv > div:hover > span {
+            visibility: visible;
+        }
+
+        .controls-container > * {
+            position: absolute;
+            background-color: #9A7E6F;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            width: 150px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .move-pole-button {
+            top: 30px;
+            right: 45px;
+        }
+
+        .rotate-left-button {
+            top: 90px;
+            right: 200px;
+        }
+
+        .rotate-right-button {
+            top: 90px;
+            right: 45px;
+        }
+
+        .angle-display {
+            top: 150px;
+            right: 45px;
+            cursor: default;
+            width: 120px;
+        }
+
+        .depth-display {
+            top: 150px;
+            right: 200px;
+            cursor: default;
+            width: 120px;
+        }
+
+        .move-pole-up-button {
+            position: absolute;
+            background-color: #9A7E6F;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            width: 150px;
+            text-align: center;
+            cursor: pointer;
+            top: 30px;
+            right: 200px;
+        }
+
+        .next-pole-button {
+            position: absolute;
+            background-color: #E9EED9;
+            color: #54473F;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            width: 150px;
+            text-align: center;
+            cursor: pointer;
+            top: 210px;
+            right: 123px;
+        }
+
+        .move-pole-button:hover, .rotate-left-button:hover, .rotate-right-button:hover, .move-pole-up-button:hover {
+            background-color: #826a5d;
+        }
+
+        .modDiv{
+            border: 1px solid red;
+            position: absolute;
+            top:50px;
+            left:50px;
+        }
+
+        .modButton{
+            position: absolute;
+            top:70px;
+            left:50px;
+            width:50px;
+            height: 50px;
+        }
+
+        .weather-box {
+                position: fixed;
+                left: 20px;
+                top: 300px;
+                width: 250px;
+                background-color: #E9EED9;
+                border: 1px solid #9A7E6F;
+                border-radius: 10px;
+                padding: 20px;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
+                font-family: Arial, sans-serif;
+                text-align: center;
+            }
+
+        .time-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #54473F;
+            margin-bottom: 10px;
+        }
+
+        .temperature-display {
+            font-size: 20px;
+            color: #54473F;
+            margin-bottom: 10px;
+        }
+
+        .wind-alert {
+            display: none;
+            background-color: #FEF3C7;
+            border: 1px solid #FCD34D;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+            color: #92400E;
+        }
+
+        .wind-alert.show {
+                display: block;
+            }
+
+        .health-bar-container {
+            margin-top: 15px;
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 10px;
+            padding: 3px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .health-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #4CAF50;
+            border-radius: 8px;
+            transition: width 0.2s ease-in-out;
+        }
+
+        .health-label, .energy-label {
+            font-size: 16px;
+            color: #54473F;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .energy-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #FFD700;
+            border-radius: 8px;
+            transition: width 0.2s ease-in-out;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="weather-box">
+        <div class="time-display"></div>
+        <div class="temperature-display"></div>
+        <div class="wind-alert"></div>
+        <div class="health-label">Tent Health</div>
+        <div class="health-bar-container">
+            <div class="health-bar"></div>
+        </div>
+        <br>
+        <div class="energy-label">Energy Level</div>
+        <div class="health-bar-container">
+            <div class="energy-bar"></div>
+        </div>  
+    </div>
+
+    <div class="modDiv">
+        <input class="modInput">
+        <button class="modButton"></button>
+    </div>
+
+    <div class="message-container">
+        <p class="message"></p>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Smart Camping Interface</h1>
+            <p class="intro">Discover the world of smart and interactive camping, where technology meets nature for a unique experience.</p>
+        </div>
+        <button class="start-button">Select a location on the map</button>
+        <div class="photo-grid"></div>
+    </div>
+
+<script>
+
+    let currentRotation = 0;
+    let currentDepth = 0;
+    let poleDiv;
+    let currentPoleIndex = 0;
+    const targetAngles = [30, 10, -20, -40];
+    const targetDepth = -5;
+    let polesPlaced = 0;
+    let tentHealth = 100;
+    const directions = ['north','south','east','west'];
+    let activeCoverDirection = null;
+    let clickedDirection;
+
+    const areaValues = [
+        { stability: 85, humidity: 45, sunExposure: 75 },
+        { stability: 65, humidity: 60, sunExposure: 85 },
+        { stability: 90, humidity: 35, sunExposure: 65 },
+        { stability: 70, humidity: 55, sunExposure: 90 },
+        { stability: 80, humidity: 40, sunExposure: 70 },
+        { stability: 75, humidity: 50, sunExposure: 80 },
+        { stability: 95, humidity: 30, sunExposure: 60 },
+        { stability: 60, humidity: 65, sunExposure: 95 },
+        { stability: 85, humidity: 45, sunExposure: 85 }
+    ];
+
+    function createMap() {
+        const mainImage = $('<div>').css({
+            'background-image': 'url("map.jfif")',
+            'background-size': 'cover',
+            'background-position': 'center',
+            'width': '100%',
+            'height': '100%',
+            'z-index': '1',
+            'position': 'relative'
+        });
+        $('.photo-grid').html('').append(mainImage);
+        $('.photo-grid').show();
+        createGrid();
+    }
+
+    function createGrid() {
+        let gridDiv = $('<div>').addClass('gridDiv');
+
+        for (let i = 0; i < 9; i++) {
+            let tempDiv = $('<div>').addClass('steak');
+            let stabilitySpan = $('<span>Soil Stability: ' + areaValues[i].stability + '%<br>Humidity: ' + areaValues[i].humidity + '%<br>Sun Exposure: ' + areaValues[i].sunExposure + '%</span>');
+            tempDiv.append(stabilitySpan);
+            gridDiv.append(tempDiv);
+        }
+
+        $('.photo-grid').append(gridDiv);
+
+        $('.steak').click(function() {
+            $('.container').empty();
+            createControlButtons();
+            placeSteak();
+            $('.controls-container').show();
+            showMessage(`Τοποθετήστε τον πάσσαλο ${currentPoleIndex + 1} βάθος ${targetDepth} μέτρα και με γωνία ${targetAngles[currentPoleIndex]}°.`);
+        });
+    }
+
+    function createControlButtons() {
+        const controlsContainer = $('<div>').addClass('controls-container');
+        
+        const moveUpButton = $('<button>').addClass('move-pole-up-button').text('Move Pole Up');
+        const moveDownButton = $('<button>').addClass('move-pole-button').text('Move Pole Down');
+        const rotateLeftButton = $('<button>').addClass('rotate-left-button').text('Rotate Left');
+        const rotateRight = $('<button>').addClass('rotate-right-button').text('Rotate Right');
+        const angleDisplay = $('<div>').addClass('angle-display').text('Angle: 0°');
+        const depthDisplay = $('<div>').addClass('depth-display').text('Depth: 0 μέτρα');
+        const nextPole = $('<button>').addClass('next-pole-button').text('Next Pole');
+
+        controlsContainer.append(moveUpButton, moveDownButton, rotateLeftButton, rotateRight, angleDisplay, depthDisplay, nextPole);
+        nextPole.hide();
+
+        $('body').append(controlsContainer);
+
+        moveUpButton.click(function() {
+            let angleInRadians = currentRotation * (Math.PI / 180);
+            let deltaY = Math.cos(angleInRadians) * -50; // Αρνητικό για κίνηση προς τα πάνω
+            let deltaX = Math.sin(angleInRadians) * -50; // Αρνητικό για αντίστροφη κίνηση στον X άξονα
+
+            let poleTop = parseInt(poleDiv.css('top')) + deltaY;
+            let poleLeft = parseInt(poleDiv.css('left')) - deltaX;
+
+            poleDiv.css({ 
+                top: `${poleTop}px`, 
+                left: `${poleLeft}px`
+            });
+            currentDepth += 0.5;
+            adjustPoleVisibility();
+        });
+
+        moveDownButton.click(function() {
+            let angleInRadians = currentRotation * (Math.PI / 180);
+            let deltaY = Math.cos(angleInRadians) * 50;
+            let deltaX = Math.sin(angleInRadians) * 50;
+
+            let poleTop = parseInt(poleDiv.css('top')) + deltaY;
+            let poleLeft = parseInt(poleDiv.css('left')) - deltaX;
+
+            poleDiv.css({ 
+                top: `${poleTop}px`, 
+                left: `${poleLeft}px`
+            });
+
+            currentDepth -= 0.5
+            adjustPoleVisibility();
+        });
+
+        rotateLeftButton.click(function() {
+            currentRotation -= 10;
+            poleDiv.css('transform', `rotate(${currentRotation}deg)`);
+            updateAngleDisplay();
+        });
+
+        rotateRight.click(function() {
+            currentRotation += 10;
+            poleDiv.css('transform', `rotate(${currentRotation}deg)`);
+            updateAngleDisplay();
+        });
+    }
+
+    function adjustPoleVisibility() {
+        let poleRect = poleDiv[0].getBoundingClientRect();
+        let eraseRect = $('.container').find('div').last()[0].getBoundingClientRect();
+        
+        let angleInRadians = currentRotation * (Math.PI / 180);
+        let poleHeight = poleRect.height;
+        let poleWidth = poleRect.width;
+        
+        let poleCenter = {
+            x: poleRect.left + poleWidth / 2,
+            y: poleRect.top + poleHeight / 2
+        };
+        
+        let distanceToErase = eraseRect.top - poleCenter.y;
+        
+        let visibleLength;
+        if (Math.abs(currentRotation) < 45) {
+            visibleLength = distanceToErase / Math.cos(angleInRadians);
+        } else {
+            visibleLength = Math.sqrt(
+                Math.pow(distanceToErase, 2) + 
+                Math.pow(distanceToErase * Math.tan(angleInRadians), 2)
+            );
+        }
+        
+        let visiblePercentage = (visibleLength + poleHeight / 2) / poleHeight * 100;
+        visiblePercentage = Math.max(0, Math.min(100, visiblePercentage));
+        
+        if (poleRect.bottom > eraseRect.top) {
+            poleDiv.css('clip-path', `inset(0 0 ${100 - visiblePercentage}% 0)`);
+        } else {
+            poleDiv.css('clip-path', 'none');
+        }
+
+            currentDepth;
+        $('.depth-display').text(`Βάθος: ${currentDepth} μέτρα`);
+        if(currentDepth === targetDepth){
+            $('.depth-display').css('background-color', '#4CAF50');
+            showMessage(`Σωστό βάθος! Τώρα ρυθμίστε τη γωνία στις ${targetAngles[currentPoleIndex]}°`);
+        }else{
+            $('.depth-display').css('background-color', '#9A7E6F');
+        }
+        nextPole();
+    }
+
+    function placeSteak() {
+        $('.container').css({
+            'background-image': 'url("dirt.jpg")',
+            'background-size': '100% 100%',
+            'background-repeat': 'no-repeat',
+            'background-position': 'center',
+            'position': 'relative'
+        });
+
+        poleDiv = $('<div>').addClass('poleDiv').css({
+            'height': '2000px',
+            'width': '100%',
+            'background-image': 'url("woodenPole3.png")',
+            'background-size': 'cover',
+            'background-repeat': 'no-repeat',
+            'background-position': 'center',
+            // 'border': '3px solid red',
+            'position': 'absolute',
+            'top': '-1200px',
+            'left': '0px',
+            'transform-origin': 'center center'
+        });
+
+        let eraseDiv = $('<div>').css({
+            'height': '500px',
+            'width': '100%',
+            'position': 'absolute',
+            // 'border': '3px solid green',
+            'top': '500px',
+            'left': '0px',
+            'overflow': 'hidden'
+        });
+
+        $('.container').append(poleDiv);
+        $('.container').append(eraseDiv);
+    }
+
+    function updateAngleDisplay() {
+        let normalizedAngle = ((currentRotation % 360 + 540) % 360) - 180;
+        $('.angle-display').text(`Γωνία: ${normalizedAngle}°`);
+        
+        const buttons = $('.angle-display');
+        if (normalizedAngle === targetAngles[currentPoleIndex]) {
+            buttons.css('background-color', '#4CAF50');
+            if(currentDepth === targetDepth) {
+                showMessage(`Τέλεια! Ο πάσσαλος ${currentPoleIndex + 1} τοποθετήθηκε σωστά!`);
+            }else{
+                buttons.css('background-color', '#9A7E6F');
+            }
+        } else {
+            buttons.css('background-color', '#9A7E6F');
+        }
+        nextPole();
+    }
+
+    $(document).ready(function() {
+        $('.start-button').click(function() {
+            $('.controls-container').remove();
+            $('.container').find('.photo-grid').remove();
+            const newPhotoGrid = $('<div>').addClass('photo-grid');
+            $('.container').append(newPhotoGrid);
+            createMap();
+            showMessage('Επιλέξτε μια περιοχή στον χάρτη');
+        });
+        $(".weather-box").hide();
+    });
+
+    function nextPole(mod = false) {
+        if(mod){
+            mainMenu();
+
+            showMessage("Ωραια, η σκηνή έχει στηθεί. Βρίσκεσαι στο κεντρικό μενού. Από εδώ μπορείς να ελέγξεις όλες τις λειτουργίες της σκηνής.");
+            $(".container").css({})
+        }
+
+        if($(".depth-display").css('background-color') == "rgb(76, 175, 80)" && 
+           $(".angle-display").css('background-color') == "rgb(76, 175, 80)") {
+            if (currentPoleIndex < 3) {
+                $(".next-pole-button").show();
+                
+                // Προσθέστε click handler για το next-pole-button
+                $(".next-pole-button").off('click').on('click', function() {
+                    currentPoleIndex++;
+                    polesPlaced++;
+                    resetPolePosition();
+                    showMessage(`Τοποθετήστε τον πάσσαλο ${currentPoleIndex + 1} με γωνία ${targetAngles[currentPoleIndex]}° και βάθος ${targetDepth} μέτρα`);
+                    $(".next-pole-button").hide();
+                    $(".depth-display").css('background-color', '#9A7E6F');
+                    $(".angle-display").css('background-color', '#9A7E6F');
+                });
+            } else if (currentPoleIndex === 3) {
+                showMessage("Συγχαρητήρια! Όλοι οι πάσσαλοι τοποθετήθηκαν σωστά!");
+                $(".next-pole-button").text("Ολοκλήρωση!").show();
+                
+                $(".next-pole-button").click(function(){
+                    $(".container").empty();
+                    $(".container").css('background-image','none');
+                    $(".controls-container").empty();
+                    showMessage("Ωραια, η σκηνή έχει στηθεί. Βρίσκεσαι στο κεντρικό μενού. Από εδώ, μπορείς να ελέγξεις όλες τις λειτουργίες της σκηνής.");
+                    mainMenu();
+                }); 
+                
+            }
+        }else{
+            $(".next-pole-button").hide();
+        }
+    }
+
+    function hideMessage() {
+        $('.message-container').fadeOut();
+    }
+
+    function showMessage(text) {
+        $('.message').text(text);
+        $('.message-container').fadeIn();
+    }
+
+    function resetPolePosition() {
+        currentRotation = 0;
+        currentDepth = 0;
+        
+        poleDiv.css({
+            'top': '-1200px',
+            'left': '0px',
+            'transform': 'rotate(0deg)'
+        });
+        
+        updateAngleDisplay();
+        adjustPoleVisibility();
+    }
+
+    $(".modButton").click(function() {
+        nextPole(mod=true);
+    });
+
+    function mainMenu() {
+        createWeatherBox();
+        $(".container").empty();
+
+        // Container for the buttons
+        const buttonsContainer = $('<div>').css({
+            'display': 'grid',
+            'grid-template-columns': 'repeat(2, 1fr)',
+            'gap': '0',
+            'place-items': 'center',
+            'width': '100%',
+            'height': '100%',
+            'padding': '4rem',
+            'position': 'relative'
+        });
+
+        // Menu button labels
+        const buttonLabels = [
+            'Διαχείρηση Ενέργειας',
+            'Τοποθέτηση Προστατευτικών Πανιών',
+            'Ρύθμιση Φωτισμού',
+            'Καιρικές Συνθήκες',
+            'Πλοήγηση Σε Καταφύγια',
+            'Επικοινωνία Με Υπαλλήλους'
+        ];
+
+        // Create button wrapper with click handler
+        const createButtonWrapper = (label, index) => {
+            const wrapper = $('<div>').css({
+                'padding': '1.5rem',
+                'width': '100%',
+                'height': '100%',
+                'display': 'flex',
+                'justify-content': 'center',
+                'align-items': 'center',
+                'position': 'relative'
+            });
+
+            const button = $('<button>')
+                .text(label)
+                .css({
+                    'background-color': '#9A7E6F',
+                    'color': 'white',
+                    'padding': '30px 40px',
+                    'border-radius': '12px',
+                    'font-size': '24px',
+                    'font-weight': 'bold',
+                    'width': '300px',
+                    'height': '150px',
+                    'text-align': 'center',
+                    'cursor': 'pointer',
+                    'transition': 'background-color 0.3s ease'
+                })
+                .hover(
+                    function() { $(this).css('background-color', '#826a5d'); },
+                    function() { $(this).css('background-color', '#9A7E6F'); }
+                )
+                .click(function() {
+                    createSubWindow(label);
+                });
+
+            wrapper.append(button);
+            return wrapper;
+        };
+
+        // Add buttons with wrappers
+        buttonLabels.forEach((label, index) => {
+            buttonsContainer.append(createButtonWrapper(label, index));
+        });
+
+        // Borders
+        const verticalBorder = $('<div>').css({
+            'position': 'absolute',
+            'top': '4rem',
+            'bottom': '4rem',
+            'left': '50%',
+            'width': '2px',
+            'background-color': '#9A7E6F',
+            'transform': 'translateX(-50%)'
+        });
+
+        const horizontalBorders = [];
+        for (let i = 1; i < 3; i++) {
+            const horizontalBorder = $('<div>').css({
+                'position': 'absolute',
+                'left': '4rem',
+                'right': '4rem',
+                'top': `${i * 33.33}%`,
+                'height': '2px',
+                'background-color': '#9A7E6F'
+            });
+            horizontalBorders.push(horizontalBorder);
+        }
+
+        buttonsContainer.append(verticalBorder);
+        horizontalBorders.forEach(border => buttonsContainer.append(border));
+        $(".container").append(buttonsContainer);
+    }
+
+    function createWeatherBox() {
+        $(".weather-box").show();
+
+        // Initialize energy level
+        let energyLevel = 100;
+
+        // Style the energy bar
+        $('.energy-bar').css({
+            'width': '100%',
+            'height': '20px',
+            'background-color': '#FFD700', // Χρυσό χρώμα για την ενέργεια
+            'border-radius': '8px',
+            'transition': 'width 0.5s ease-in-out'
+        });
+
+        // Initialize state
+        let currentTime = new Date();
+        currentTime.setHours(8, 0, 0); // Start at 8:00
+        
+        // Temperature calculation based on time
+        function calculateTemperature() {
+            const hour = currentTime.getHours();
+            const baseTemp = 13; // Starting temperature at 8:00
+
+            if (hour >= 8 && hour < 18) {
+                // 8:00-18:00: Temperature rises 15 degrees over 10 hours
+                const hoursFrom8 = (hour - 8) + (currentTime.getMinutes() / 60);
+                const tempIncrease = (15 * hoursFrom8) / 10;
+                return baseTemp + tempIncrease;
+            } else if (hour >= 18 && hour < 23) {
+                // 18:00-23:00: Temperature drops 5 degrees over 5 hours
+                const hoursFrom18 = (hour - 18) + (currentTime.getMinutes() / 60);
+                const tempDecrease = (5 * hoursFrom18) / 5;
+                return (baseTemp + 15) - tempDecrease;
+            } else {
+                // 23:00-8:00: Temperature drops 10 degrees over 9 hours
+                let hoursFrom23;
+                if (hour >= 23) {
+                    hoursFrom23 = (hour - 23) + (currentTime.getMinutes() / 60);
+                } else {
+                    hoursFrom23 = (hour + 1) + (currentTime.getMinutes() / 60);
+                }
+                const tempDecrease = (10 * hoursFrom23) / 9;
+                return (baseTemp + 10) - tempDecrease;
+            }
+        }
+
+        function updateTime() {
+            currentTime.setMinutes(currentTime.getMinutes() + 30);
+            if (currentTime.getHours() >= 24) {
+                currentTime.setHours(currentTime.getHours() - 24);
+            }
+            $('.time-display').text(currentTime.toLocaleTimeString([], { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            }));
+            
+            updateTemperature();
+            updateEnergyLevel(); // Add energy update
+        }
+
+        function updateTemperature() {
+            const temp = calculateTemperature();
+            $('.temperature-display').text(`Temperature: ${temp.toFixed(1)}°C`);
+        }
+
+        // New function to update energy level
+        function updateEnergyLevel() {
+            const hour = currentTime.getHours();
+            
+            // Μείωση ενέργειας κατά τη διάρκεια της νύχτας (20:00 - 06:00)
+            if (hour >= 20 || hour < 6) {
+                energyLevel = Math.max(0, energyLevel - 2); // Μείωση κατά 2%
+            } 
+            // Αύξηση ενέργειας κατά τη διάρκεια της ημέρας (06:00 - 20:00)
+            else {
+                energyLevel = Math.min(100, energyLevel + 1); // Αύξηση κατά 1%
+            }
+
+            // Update the energy bar
+            $('.energy-bar').css({
+                'width': `${energyLevel}%`,
+                'background-color': energyLevel > 66 ? '#FFD700' : // Χρυσό
+                                  energyLevel > 33 ? '#FFA500' : // Πορτοκαλί
+                                  '#FF0000' // Κόκκινο
+            });
+        }
+
+        // Set up intervals
+        setInterval(updateTime, 10000); // Update time every 10 seconds (+30 minutes)
+
+        // Random wind alerts between 1-2 minutes
+        function scheduleNextWindAlert() {
+            const randomDelay = Math.random() * 60000 + 30000; // Random delay between 0.5 and 1.5 minutes
+            setTimeout(() => {
+                showWindAlert();
+                scheduleNextWindAlert(); // Schedule next alert
+            }, randomDelay);
+        }
+
+        // Initial updates
+        updateTime();
+        updateTemperature();
+        updateEnergyLevel(); // Add initial energy update
+        scheduleNextWindAlert();
+    }
+
+    function updateTentHealth() {
+        // Update the health bar width and color
+        $('.health-bar').css({
+            'width': tentHealth + '%',
+            'background-color': tentHealth > 66 ? '#4CAF50' : // Green
+                              tentHealth > 33 ? '#FFA500' : // Orange
+                              '#FF0000' // Red
+        });
+    }
+
+    function showWindAlert() {
+        const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+        const alertElement = $('.wind-alert');
+        const windDamage = Math.floor(Math.random() * (15 - 5 + 1)) + 5;
+        
+        alertElement
+            .html(`<strong>Προειδοποίηση Ανέμου!</strong><br>Ισχυροί άνεμοι πλησιάζουν από ${randomDirection}<br>Πιθανή ζημιά: ${windDamage}%`)
+            .addClass('show');
+
+        setTimeout(() => {
+            // Check if the active cover matches the wind direction
+            if (activeCoverDirection === randomDirection) {
+                showMessage('Το προστατευτικό πανί προστάτεψε τη σκηνή από τους ανέμους!');
+            } else {
+                tentHealth = Math.max(0, tentHealth - windDamage);
+                updateTentHealth();
+                showMessage(`Η σκηνή υπέστη ζημιά ${windDamage}% από τους ισχυρούς ανέμους!`);
+            }
+        }, 15000);
+
+        setTimeout(() => {
+            alertElement.removeClass('show');
+        }, 15000);
+    }
+
+    function updateEnergyLevel() {
+        const hour = currentTime.getHours();
+        const totalDailyRegen = 110; // Total regeneration percentage per day
+        const activeRegenHours = 8; // Hours of active regeneration (10-18)
+        const regenPerUpdate = (totalDailyRegen / activeRegenHours) * 0.5; // Per 30-minute update
+        
+        // 10:00 - 18:00: Energy increases
+        if (hour >= 10 && hour < 18) {
+            energyLevel = Math.min(100, energyLevel + regenPerUpdate);
+        }
+        // 20:00 - 08:00: Energy stays the same
+        else if (hour >= 20 || hour < 8) {
+            energyLevel = Math.max(0, energyLevel - 0.5); // Decrease by .5% per update
+        // 08:00 - 10:00 and 18:00 - 20:00: Energy increases slower
+        }else{
+            energyLevel = Math.min(100, energyLevel + (regenPerUpdate/2));
+        }
+        
+        // Update the energy bar
+        $('.energy-bar').css({
+            'width': `${energyLevel}%`,
+            'background-color': energyLevel > 66 ? '#FFD700' : // Gold
+                              energyLevel > 33 ? '#FFA500' : // Orange
+                              '#FF0000' // Red
+        });
+    }
+
+    function createSubWindow(title) {
+        $(".container").empty();
+        $('.message-container').hide();
+        
+        // Create window container
+        const windowContainer = $('<div>').css({
+            'width': '100%',
+            'height': '100%',
+            'padding': '2rem',
+            'display': 'flex',
+            'flex-direction': 'column',
+            'gap': '20px'
+        });
+
+        // Create header with back button and title
+        const header = $('<div>').css({
+            'display': 'flex',
+            'align-items': 'center',
+            'gap': '20px',
+            'padding': '10px 0'
+        });
+
+        // Back button
+        const backButton = $('<button>')
+            .text('←')
+            .css({
+                'background-color': '#9A7E6F',
+                'color': 'white',
+                'padding': '10px 20px',
+                'border-radius': '8px',
+                'font-size': '24px',
+                'font-weight': 'bold',
+                'cursor': 'pointer',
+                'transition': 'background-color 0.3s ease'
+            })
+            .hover(
+                function() { $(this).css('background-color', '#826a5d'); },
+                function() { $(this).css('background-color', '#9A7E6F'); }
+            )
+            .click(function() {
+                showMessage("Κεντρικό μενού")
+                mainMenu();
+            });
+
+        // Title
+        const windowTitle = $('<h2>')
+            .text(title)
+            .css({
+                'font-size': '32px',
+                'color': '#54473F',
+                'margin': '0'
+            });
+
+        header.append(backButton, windowTitle);
+        windowContainer.append(header);
+
+        // Add content area for future use
+        const contentArea = $('<div>').css({
+            'flex-grow': '1',
+            'background-color': 'rgba(154, 126, 111, 0.1)',
+            'border-radius': '12px',
+            'padding': '20px'
+        });
+
+        if (title === 'Τοποθέτηση Προστατευτικών Πανιών') {
+            const tent = $('<div>').css({
+                'width': '200px',
+                'height': '200px',
+                'background-color': '#9A7E6F',
+                'position': 'absolute',
+                'top': '50%',
+                'left': '50%',
+                'transform': 'translate(-50%, -50%)',
+                'border-radius': '10px'
+            });
+
+            if(activeCoverDirection != null){
+                showMessage(`Το πανί βρίσκεται ${clickedDirection}`);
+            }
+
+            const coverPositions = [
+        { direction: 'north', rotation: 0, active: false },
+        { direction: 'east', rotation: 90, active: false },
+        { direction: 'south', rotation: 180, active: false },
+        { direction: 'west', rotation: 270, active: false }
+    ];
+
+    coverPositions.forEach((pos) => {
+        const cover = $('<div>')
+            .addClass('protective-cover')
+            .attr('data-direction', pos.direction)
+            .css({
+                'width': '0',
+                'height': '0',
+                'border-left': '20px solid transparent',
+                'border-right': '20px solid transparent',
+                'border-bottom': '40px solid #54473F',
+                'position': 'absolute',
+                'cursor': 'pointer',
+                'transition': 'transform 0.3s ease',
+                'opacity': '0.5'
+            })
+            .click(function() {
+                const $this = $(this);
+                clickedDirection = pos.direction;
+
+                // Update the active state in coverPositions array
+                coverPositions.forEach(coverPos => {
+                    if (coverPos.direction === clickedDirection) {
+                        // Toggle active state
+                        coverPos.active = !coverPos.active;
+                        
+                        if (coverPos.active) {
+                            activeCoverDirection = clickedDirection;
+                            $this.css({
+                                'opacity': '1',
+                                'border-bottom-color': '#4CAF50'
+                            });
+                            showMessage(`Το προστατευτικό πανί τοποθετήθηκε ${coverPos.direction}`);
+                        } else {
+                            activeCoverDirection = null;
+                            $this.css({
+                                'opacity': '0.5',
+                                'border-bottom-color': '#54473F'
+                            });
+                            showMessage('Το προστατευτικό πανί αφαιρέθηκε');
+                        }
+                    } else {
+                        // Deactivate other covers
+                        coverPos.active = false;
+                        $(`.protective-cover[data-direction="${coverPos.direction}"]`).css({
+                            'opacity': '0.5',
+                            'border-bottom-color': '#54473F'
+                        });
+                    }
+                });
+            });
+
+                    
+
+                // Position the covers around the tent
+                switch (pos.direction) {
+                    case 'north':
+                        cover.css({
+                            'top': '-60px',
+                            'left': '50%',
+                            'transform': 'translateX(-50%)'
+                        });
+                        break;
+                    case 'east':
+                        cover.css({
+                            'top': '50%',
+                            'right': '-60px',
+                            'transform': 'translateY(-50%) rotate(90deg)'
+                        });
+                        break;
+                    case 'south':
+                        cover.css({
+                            'bottom': '-60px',
+                            'left': '50%',
+                            'transform': 'translateX(-50%) rotate(180deg)'
+                        });
+                        break;
+                    case 'west':
+                        cover.css({
+                            'top': '50%',
+                            'left': '-60px',
+                            'transform': 'translateY(-50%) rotate(270deg)'
+                        });
+                        break;
+                }
+
+                tent.append(cover);
+            });
+
+            contentArea.append(tent);
+
+            // Modify the showWindAlert function to check protective covers
+            window.showWindAlert = function() {
+                const directions = {
+                    'Βόρεια': 'north',
+                    'Νότια': 'south',
+                    'Ανατολικά': 'east',
+                    'Δυτικά': 'west'
+                };
+                
+                const randomDirection = Object.keys(directions)[Math.floor(Math.random() * 4)];
+                const alertElement = $('.wind-alert');
+                const windDamage = Math.floor(Math.random() * (15 - 5 + 1)) + 5;
+                
+                alertElement
+                    .html(`<strong>Προειδοποίηση Ανέμου!</strong><br>Ισχυροί άνεμοι πλησιάζουν από ${randomDirection}<br>Πιθανή ζημιά: ${windDamage}%`)
+                    .addClass('show');
+
+                setTimeout(() => {
+                    const coverDirection = directions[randomDirection];
+                    const activeCover = coverPositions.find(pos => pos.direction === coverDirection && pos.active);
+
+                    if (activeCover) {
+                        showMessage('Το προστατευτικό πανί προστάτεψε τη σκηνή από τους ανέμους!');
+                    } else {
+                        tentHealth = Math.max(0, tentHealth - windDamage);
+                        updateTentHealth();
+                        showMessage(`Η σκηνή υπέστη ζημιά ${windDamage}% από τους ισχυρούς ανέμους!`);
+                    }
+                }, 15000);
+
+                setTimeout(() => {
+                    alertElement.removeClass('show');
+                }, 15000);
+            };
+        }
+        
+        windowContainer.append(contentArea);
+        $(".container").append(windowContainer);
+    }
+
+</script>
+
+</body>
+</html>
