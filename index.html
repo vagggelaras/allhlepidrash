@@ -8,15 +8,23 @@
     <style>
         body {
             margin: 0;
-            min-height: 100vh;
-            height: 100vh;
+            padding: 0;
             background-color: whitesmoke;
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .main-wrapper {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
-            box-sizing: border-box;
+            gap: 20px;
         }
 
         .message-container {
@@ -244,7 +252,7 @@
         .weather-box {
                 position: fixed;
                 left: 20px;
-                top: 300px;
+                top: 20px;
                 width: 250px;
                 background-color: #E9EED9;
                 border: 1px solid #9A7E6F;
@@ -327,15 +335,16 @@
         }
 
         .help{
-            position: absolute;
+            position: fixed;
             width: 50px;
             height: 50px;
-            bottom: 50px;
-            right: 50px;
+            bottom: 20px;
+            right: 20px;
             background-image: url('help.png');
             background-size: cover;
             background-position: center;
             border-radius: 50%;
+            cursor: pointer;
         }
 
         .manual-popup {
@@ -447,6 +456,7 @@
 </head>
 <body>
 
+<div class="main-wrapper">
     <div class="weather-box">
         <div class="time-display"></div>
         <div class="temperature-display"></div>
@@ -480,8 +490,9 @@
         <button class="start-button">Διάλεξε περιοχή στον χάρτη.</button>
         <div class="photo-grid"></div>
     </div>
+</div>
 
-    <div class="help"></div>
+<div class="help"></div>
     <div class="manual-popup" style="display: none;">
         <div class="manual-content">
             <span class="close-button">&times;</span>
