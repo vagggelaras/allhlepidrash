@@ -2,39 +2,19 @@
 <html lang="el">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.8, minimum-scale=0.8, maximum-scale=3.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Camping Interface</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        html {
-            zoom: 0.8;
-            -moz-transform: scale(0.8);
-            -moz-transform-origin: 0 0;
-            -webkit-transform: scale(0.8);
-            -webkit-transform-origin: 0 0;
-            transform: scale(0.8);
-            transform-origin: 0 0;
-        }
-        
         body {
             margin: 0;
-            padding: 0;
+            height: 95vh;
             background-color: whitesmoke;
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .main-wrapper {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
-            gap: 20px;
+            padding: 20px 0;
         }
 
         .message-container {
@@ -168,80 +148,124 @@
             visibility: visible;
         }
 
-        .controls-container > * {
-            position: absolute;
-            background-color: #9A7E6F;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 6px;
-            font-size: 18px;
+        .controls-container {
+            display: none;
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 320px;
+            gap: 20px;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .control-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(154, 126, 111, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .control-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            font-size: 16px;
             font-weight: bold;
-            width: 150px;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .move-pole-button {
-            top: 30px;
-            right: 45px;
-        }
-
-        .rotate-left-button {
-            top: 100px;
-            right: 200px;
-        }
-
-        .rotate-right-button {
-            top: 100px;
-            right: 45px;
-        }
-
-        .angle-display {
-            top: 170px;
-            right: 45px;
-            cursor: default;
-            width: 120px;
-        }
-
-        .depth-display {
-            top: 170px;
-            right: 200px;
-            cursor: default;
-            width: 120px;
-        }
-
-        .move-pole-up-button {
-            position: absolute;
-            background-color: #9A7E6F;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 6px;
-            font-size: 18px;
-            font-weight: bold;
-            width: 150px;
-            text-align: center;
-            cursor: pointer;
-            top: 30px;
-            right: 200px;
-        }
-
-        .next-pole-button {
-            position: absolute;
-            background-color: #E9EED9;
             color: #54473F;
-            padding: 10px 15px;
-            border-radius: 6px;
-            font-size: 18px;
-            font-weight: bold;
-            width: 150px;
+            margin-bottom: 15px;
             text-align: center;
-            cursor: pointer;
-            top: 220px;
-            right: 123px;
+            border-bottom: 2px solid #E9EED9;
+            padding-bottom: 10px;
         }
 
-        .move-pole-button:hover, .rotate-left-button:hover, .rotate-right-button:hover, .move-pole-up-button:hover {
-            background-color: #826a5d;
+        .card-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .control-button {
+            background: linear-gradient(135deg, #9A7E6F 0%, #826a5d 100%);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .control-button:hover:before {
+            left: 100%;
+        }
+
+        .control-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(154, 126, 111, 0.4);
+        }
+
+        .control-button:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 15px rgba(154, 126, 111, 0.3);
+        }
+
+        .display-card {
+            background: linear-gradient(135deg, #E9EED9 0%, #f0f5db 100%);
+            border: 2px solid #9A7E6F;
+        }
+
+        .display-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #54473F;
+            text-align: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .next-pole-card {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+        }
+
+        .next-pole-card .card-title {
+            color: white;
+            border-bottom-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .next-pole-card .control-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .next-pole-card .control-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
 
         .modDiv{
@@ -262,7 +286,7 @@
         .weather-box {
                 position: fixed;
                 left: 20px;
-                top: 20px;
+                top: 300px;
                 width: 250px;
                 background-color: #E9EED9;
                 border: 1px solid #9A7E6F;
@@ -345,11 +369,11 @@
         }
 
         .help{
-            position: fixed;
+            position: absolute;
             width: 50px;
             height: 50px;
-            bottom: 20px;
-            right: 20px;
+            bottom: 50px;
+            right: 50px;
             background-image: url('help.png');
             background-size: cover;
             background-position: center;
@@ -546,7 +570,6 @@
     </div>
 </div>
 
-<div class="main-wrapper">
     <div class="weather-box">
         <div class="time-display"></div>
         <div class="temperature-display"></div>
@@ -580,9 +603,8 @@
         <button class="start-button">Διάλεξε περιοχή στον χάρτη.</button>
         <div class="photo-grid"></div>
     </div>
-</div>
 
-<div class="help"></div>
+    <div class="help"></div>
     <div class="manual-popup" style="display: none;">
         <div class="manual-content">
             <span class="close-button">&times;</span>
@@ -860,23 +882,53 @@
     function createControlButtons() {
         const controlsContainer = $('<div>').addClass('controls-container');
     
-        const moveUpButton = $('<button>').addClass('move-pole-up-button').text('Σήκωσε Τον Πάσσαλο');
-        const moveDownButton = $('<button>').addClass('move-pole-button').text('Κάρφωσε Τον Πάσσαλο');
-        const rotateLeftButton = $('<button>').addClass('rotate-left-button').text('Δεξιά Περιστροφή');
-        const rotateRight = $('<button>').addClass('rotate-right-button').text('Αριστερή Περιστροφή');
-        const angleDisplay = $('<div>').addClass('angle-display').text('Γωνία: 0°');
-        const depthDisplay = $('<div>').addClass('depth-display').text('Βάθος: 0 μέτρα');
-        const nextPole = $('<button>').addClass('next-pole-button').text('Επόμενος Πάσσαλος');
+        // Movement Card
+        const movementCard = $('<div>').addClass('control-card');
+        const movementTitle = $('<div>').addClass('card-title').text('🔨 Κίνηση Πασάλου');
+        const movementButtons = $('<div>').addClass('card-buttons');
+        
+        const moveUpButton = $('<button>').addClass('control-button').text('⬆️ Σήκωσε');
+        const moveDownButton = $('<button>').addClass('control-button').text('⬇️ Κάρφωσε');
+        
+        movementButtons.append(moveUpButton, moveDownButton);
+        movementCard.append(movementTitle, movementButtons);
 
-        controlsContainer.append(moveUpButton, moveDownButton, rotateLeftButton, rotateRight, angleDisplay, depthDisplay, nextPole);
-        nextPole.hide();
+        // Rotation Card
+        const rotationCard = $('<div>').addClass('control-card');
+        const rotationTitle = $('<div>').addClass('card-title').text('🔄 Περιστροφή');
+        const rotationButtons = $('<div>').addClass('card-buttons');
+        
+        const rotateLeftButton = $('<button>').addClass('control-button').text('↻ Δεξιά');
+        const rotateRightButton = $('<button>').addClass('control-button').text('↺ Αριστερά');
+        
+        rotationButtons.append(rotateLeftButton, rotateRightButton);
+        rotationCard.append(rotationTitle, rotationButtons);
 
+        // Status Card
+        const statusCard = $('<div>').addClass('control-card display-card');
+        const statusTitle = $('<div>').addClass('card-title').text('📊 Κατάσταση');
+        const angleDisplay = $('<div>').addClass('display-value').text('Γωνία: 0°');
+        const depthDisplay = $('<div>').addClass('display-value').text('Βάθος: 0 μέτρα');
+        
+        statusCard.append(statusTitle, angleDisplay, depthDisplay);
+
+        // Next Pole Card (initially hidden)
+        const nextPoleCard = $('<div>').addClass('control-card next-pole-card').hide();
+        const nextPoleTitle = $('<div>').addClass('card-title').text('✅ Επόμενο Βήμα');
+        const nextPoleButtons = $('<div>').addClass('card-buttons');
+        const nextPoleButton = $('<button>').addClass('control-button').text('Επόμενος Πάσσαλος');
+        
+        nextPoleButtons.append(nextPoleButton);
+        nextPoleCard.append(nextPoleTitle, nextPoleButtons);
+
+        controlsContainer.append(movementCard, rotationCard, statusCard, nextPoleCard);
         $('body').append(controlsContainer);
 
+        // Event handlers
         moveUpButton.click(function() {
             let angleInRadians = currentRotation * (Math.PI / 180);
-            let deltaY = Math.cos(angleInRadians) * -50; // Αρνητικό για κίνηση προς τα πάνω
-            let deltaX = Math.sin(angleInRadians) * -50; // Αρνητικό για αντίστροφη κίνηση στον X άξονα
+            let deltaY = Math.cos(angleInRadians) * -50;
+            let deltaX = Math.sin(angleInRadians) * -50;
 
             let poleTop = parseInt(poleDiv.css('top')) + deltaY;
             let poleLeft = parseInt(poleDiv.css('left')) - deltaX;
@@ -912,11 +964,17 @@
             updateAngleDisplay();
         });
 
-        rotateRight.click(function() {
+        rotateRightButton.click(function() {
             currentRotation += 10;
             poleDiv.css('transform', `rotate(${currentRotation}deg)`);
             updateAngleDisplay();
         });
+
+        // Store references for later use
+        controlsContainer.data('angleDisplay', angleDisplay);
+        controlsContainer.data('depthDisplay', depthDisplay);
+        controlsContainer.data('nextPoleCard', nextPoleCard);
+        controlsContainer.data('nextPoleButton', nextPoleButton);
     }
 
     function adjustPoleVisibility() {
@@ -953,13 +1011,16 @@
             poleDiv.css('clip-path', 'none');
         }
 
-            currentDepth;
-        $('.depth-display').text(`Βάθος: ${currentDepth} μέτρα`);
-        if(currentDepth === targetDepth){
-            $('.depth-display').css('background-color', '#4CAF50');
-            showMessage(`Σωστό βάθος! Τώρα ρυθμίστε τη γωνία στις ${targetAngles[currentPoleIndex]}°`);
-        }else{
-            $('.depth-display').css('background-color', '#9A7E6F');
+        // Update depth display using the new card system
+        const depthDisplay = $('.controls-container').data('depthDisplay');
+        if (depthDisplay) {
+            depthDisplay.text(`Βάθος: ${currentDepth} μέτρα`);
+            if(currentDepth === targetDepth){
+                depthDisplay.css('background-color', '#4CAF50').css('color', 'white');
+                showMessage(`Σωστό βάθος! Τώρα ρυθμίστε τη γωνία στις ${targetAngles[currentPoleIndex]}°`);
+            }else{
+                depthDisplay.css('background-color', 'rgba(255, 255, 255, 0.7)').css('color', '#54473F');
+            }
         }
         nextPole();
     }
@@ -1003,18 +1064,20 @@
 
     function updateAngleDisplay() {
         let normalizedAngle = ((currentRotation % 360 + 540) % 360) - 180;
-        $('.angle-display').text(`Γωνία: ${normalizedAngle}°`);
         
-        const buttons = $('.angle-display');
-        if (normalizedAngle === targetAngles[currentPoleIndex]) {
-            buttons.css('background-color', '#4CAF50');
-            if(currentDepth === targetDepth) {
-                showMessage(`Τέλεια! Ο πάσσαλος ${currentPoleIndex + 1} τοποθετήθηκε σωστά!`);
-            }else{
-                buttons.css('background-color', '#9A7E6F');
+        // Update angle display using the new card system
+        const angleDisplay = $('.controls-container').data('angleDisplay');
+        if (angleDisplay) {
+            angleDisplay.text(`Γωνία: ${normalizedAngle}°`);
+            
+            if (normalizedAngle === targetAngles[currentPoleIndex]) {
+                angleDisplay.css('background-color', '#4CAF50').css('color', 'white');
+                if(currentDepth === targetDepth) {
+                    showMessage(`Τέλεια! Ο πάσσαλος ${currentPoleIndex + 1} τοποθετήθηκε σωστά!`);
+                }
+            } else {
+                angleDisplay.css('background-color', 'rgba(255, 255, 255, 0.7)').css('color', '#54473F');
             }
-        } else {
-            buttons.css('background-color', '#9A7E6F');
         }
         nextPole();
     }
@@ -1040,37 +1103,46 @@
             $(".container").css({})
         }
 
-        if($(".depth-display").css('background-color') == "rgb(76, 175, 80)" && 
-           $(".angle-display").css('background-color') == "rgb(76, 175, 80)") {
+        const depthDisplay = $('.controls-container').data('depthDisplay');
+        const angleDisplay = $('.controls-container').data('angleDisplay');
+        const nextPoleCard = $('.controls-container').data('nextPoleCard');
+        const nextPoleButton = $('.controls-container').data('nextPoleButton');
+
+        // Check if both depth and angle are correct by checking background color
+        const depthCorrect = depthDisplay && depthDisplay.css('background-color') === 'rgb(76, 175, 80)';
+        const angleCorrect = angleDisplay && angleDisplay.css('background-color') === 'rgb(76, 175, 80)';
+
+        if(depthCorrect && angleCorrect) {
             if (currentPoleIndex < 3) {
-                $(".next-pole-button").show();
+                nextPoleCard.show();
                 
-                // Προσθέστε click handler για το next-pole-button
-                $(".next-pole-button").off('click').on('click', function() {
+                // Remove previous click handlers and add new one
+                nextPoleButton.off('click').on('click', function() {
                     currentPoleIndex++;
                     polesPlaced++;
                     resetPolePosition();
                     showMessage(`Τοποθετήστε τον πάσσαλο ${currentPoleIndex + 1} με γωνία ${targetAngles[currentPoleIndex]}° και βάθος ${targetDepth} μέτρα`);
-                    $(".next-pole-button").hide();
-                    $(".depth-display").css('background-color', '#9A7E6F');
-                    $(".angle-display").css('background-color', '#9A7E6F');
+                    nextPoleCard.hide();
+                    // Reset displays
+                    depthDisplay.css('background-color', 'rgba(255, 255, 255, 0.7)').css('color', '#54473F');
+                    angleDisplay.css('background-color', 'rgba(255, 255, 255, 0.7)').css('color', '#54473F');
                 });
             } else if (currentPoleIndex === 3) {
                 showMessage("Συγχαρητήρια! Όλοι οι πάσσαλοι τοποθετήθηκαν σωστά!");
-                $(".next-pole-button").text("Ολοκλήρωση!").show();
+                nextPoleButton.text("Ολοκλήρωση!");
+                nextPoleCard.show();
                 
-                $(".next-pole-button").click(function(){
+                nextPoleButton.off('click').on('click', function(){
                     $(".container").empty();
                     $(".container").css('background-image','none');
-                    $(".controls-container").empty();
+                    $(".controls-container").remove();
                     showMessage("Ωραια, η σκηνή έχει στηθεί. Βρίσκεσαι στο κεντρικό μενού. Από εδώ, μπορείς να ελέγξεις όλες τις λειτουργίες της σκηνής.");
                     initialFlag = true;
                     mainMenu();
                 }); 
-                
             }
-        }else{
-            $(".next-pole-button").hide();
+        } else {
+            nextPoleCard.hide();
         }
     }
 
